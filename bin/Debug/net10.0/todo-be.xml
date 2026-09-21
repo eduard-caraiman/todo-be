@@ -93,7 +93,7 @@
         </member>
         <member name="M:todo_be.Todos.Controllers.TodosController.MarkTodoAsCompleted(System.Int32)">
             <summary>
-            Mark TODO as completed
+            Toggle TODO completion
             </summary>
             <returns>Return status 204</returns>
         </member>
