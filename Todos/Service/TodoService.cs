@@ -27,15 +27,10 @@ public class TodoService : ITodoService
     public async Task<Todo> CreateAsync(CreateTodoRequest request)
     {
         var currentDate = DateTime.Now;
-        var newTodo = new Todo
-        {
-            Title = request.Title,
-            Description = request.Description,
-            IsCompleted = request.IsCompleted,
-            CreatedAt = currentDate,
-            UpdatedAt = currentDate,
-            Comments = []
-        };
+        var newTodo = request.ToTodo();
+
+        newTodo.CreatedAt = currentDate;
+        newTodo.UpdatedAt = currentDate;
 
         return await _todoRepository.CreateAsync(newTodo);
     }
@@ -48,10 +43,8 @@ public class TodoService : ITodoService
         {
             return null;
         }
-
-        foundTodo.Title = request.Title;
-        foundTodo.Description = request.Description;
-        foundTodo.IsCompleted = request.IsCompleted;
+        
+        request.ApplyTo(foundTodo);
         foundTodo.UpdatedAt = DateTime.Now;
 
         await _todoRepository.SaveChangesAsync();
@@ -83,12 +76,8 @@ public class TodoService : ITodoService
             return null;
         }
 
-        var newComment = new TodoComment
-        {
-            TodoId = todoId,
-            Content = request.Content,
-            CreatedAt = DateTime.Now
-        };
+        var newComment = request.ToTodoComment(todoId);
+        newComment.CreatedAt = DateTime.Now;
 
         return await _todoRepository.CreateCommentAsync(newComment);
     }

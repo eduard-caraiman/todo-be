@@ -39,8 +39,10 @@ public class TodoRepository : ITodoRepository
 
     public async Task<Todo?> GetByIdForUpdateAsync(int id)
     {
-        var foundTodo = await _dbContext.Todos.AsTracking().SingleOrDefaultAsync(t => t.Id == id);
-        return foundTodo;
+        return await _dbContext.Todos
+            .AsTracking()
+            .Include(t => t.Comments)
+            .SingleOrDefaultAsync(t => t.Id == id);
     }
 
     public void Remove(Todo todo)

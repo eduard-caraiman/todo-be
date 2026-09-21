@@ -30,16 +30,7 @@ public class TodosController : BaseController
         _logger.LogInformation("Getting all Todos");
         var todos = await _todoService.GetAllAsync();
 
-        return Ok(todos.Select(todo => new GetTodoResponse
-        {
-            Id = todo.Id,
-            Title = todo.Title,
-            Description = todo.Description,
-            IsCompleted = todo.IsCompleted,
-            Comments = todo.Comments,
-            CreatedAt = todo.CreatedAt,
-            UpdatedAt = todo.UpdatedAt
-        }));
+        return Ok(todos.Select(todo => GetTodoResponse.From(todo)));
     }
 
     /// <summary>
@@ -59,16 +50,7 @@ public class TodosController : BaseController
             return NotFound();
         }
 
-        var todoResponse = new GetTodoResponse
-        {
-            Id = foundTodo.Id,
-            Title = foundTodo.Title,
-            Description = foundTodo.Description,
-            IsCompleted = foundTodo.IsCompleted,
-            Comments = foundTodo.Comments,
-            CreatedAt = foundTodo.CreatedAt,
-            UpdatedAt = foundTodo.UpdatedAt
-        };
+        var todoResponse = GetTodoResponse.From(foundTodo);
 
         return Ok(todoResponse);
     }
@@ -93,7 +75,7 @@ public class TodosController : BaseController
 
         var newTodo = await _todoService.CreateAsync(request);
 
-        return Created($"/todos/{newTodo.Id}", newTodo);
+        return Created($"/todos/{newTodo.Id}", GetTodoResponse.From(newTodo));
     }
 
 
@@ -122,7 +104,7 @@ public class TodosController : BaseController
 
             _logger.LogInformation("Todo with ID: {TodoId} successfully updated", id);
 
-            return Ok(foundTodo);
+            return Ok(GetTodoResponse.From(foundTodo));
         }
         catch (Exception ex)
         {
@@ -179,7 +161,7 @@ public class TodosController : BaseController
         }
 
 
-        return Created($"/todos/{todoId}/comments/{newComment.Id}", newComment);
+        return Created($"/todos/{todoId}/comments/{newComment.Id}", GetTodoCommentResponse.From(newComment));
     }
 
     /// <summary>
