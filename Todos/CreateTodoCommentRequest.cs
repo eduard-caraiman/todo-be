@@ -6,7 +6,7 @@ public class CreateTodoCommentRequest
 {
     public required string Content { get; set; }
 
-    public TodoComment ToTodoComment(int todoId)
+    public TodoComment To(int todoId)
     {
         return new TodoComment
         {

@@ -27,7 +27,7 @@ public class TodoService : ITodoService
     public async Task<Todo> CreateAsync(CreateTodoRequest request)
     {
         var currentDate = DateTime.Now;
-        var newTodo = request.ToTodo();
+        var newTodo = request.To();
 
         newTodo.CreatedAt = currentDate;
         newTodo.UpdatedAt = currentDate;
@@ -43,7 +43,7 @@ public class TodoService : ITodoService
         {
             return null;
         }
-        
+
         request.ApplyTo(foundTodo);
         foundTodo.UpdatedAt = DateTime.Now;
 
@@ -76,7 +76,7 @@ public class TodoService : ITodoService
             return null;
         }
 
-        var newComment = request.ToTodoComment(todoId);
+        var newComment = request.To(todoId);
         newComment.CreatedAt = DateTime.Now;
 
         return await _todoRepository.CreateCommentAsync(newComment);

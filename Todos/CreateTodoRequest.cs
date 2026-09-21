@@ -9,7 +9,7 @@ public class CreateTodoRequest
     public required bool IsCompleted { get; set; }
 
 
-    public Todo ToTodo()
+    public Todo To()
     {
         return new Todo
         {
