@@ -1,0 +1,49 @@
+# .NET build and publish output
+[Bb]in/
+[Oo]bj/
+artifacts/
+publish/
+
+# IDE caches and personal settings (Visual Studio / Rider)
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# Test results and coverage
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+*.trx
+
+# Local logs
+logs/
+*.log
+
+# Local SQLite databases and temporary sidecar files
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Local environment configuration (keep example files versioned)
+.env
+.env.*
+!.env.example
+!.env.sample
+appsettings.Local.json
+appsettings.*.Local.json
+
+# User-specific publishing settings
+*.pubxml.user
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
