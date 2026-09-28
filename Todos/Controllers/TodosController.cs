@@ -101,9 +101,14 @@ public class TodosController : BaseController
         {
             _logger.LogInformation("Updating todo with ID: {TodoId}", id);
 
-            var foundTodo = await _todoService.UpdateAsync(id, request);
+            var result = await _todoService.UpdateAsync(id, request);
 
-            if (foundTodo is null)
+            if (result.Error is not null)
+            {
+                return BadRequest(result.Error);
+            }
+
+            if (result.Todo is null)
             {
                 _logger.LogWarning("Todo with ID: {TodoId} not found", id);
                 return NotFound();
@@ -111,7 +116,7 @@ public class TodosController : BaseController
 
             _logger.LogInformation("Todo with ID: {TodoId} successfully updated", id);
 
-            return Ok(GetTodoResponse.From(foundTodo));
+            return Ok(GetTodoResponse.From(result.Todo));
         }
         catch (Exception ex)
         {

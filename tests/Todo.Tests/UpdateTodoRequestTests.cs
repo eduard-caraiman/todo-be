@@ -1,6 +1,7 @@
 ﻿namespace todo_be.Tests;
 
 using todo_be.Todos;
+using todo_be.Todos.Requests;
 
 public class UpdateTodoRequestTests
 {

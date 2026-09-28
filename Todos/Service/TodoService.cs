@@ -50,13 +50,30 @@ public class TodoService : ITodoService
         return await _todoRepository.CreateAsync(newTodo);
     }
 
-    public async Task<Todo?> UpdateAsync(int todoId, UpdateTodoRequest request)
+    public async Task<(Todo? Todo, string? Error)> UpdateAsync(int todoId, UpdateTodoRequest request)
     {
         var foundTodo = await _todoRepository.GetByIdForUpdateAsync(todoId);
 
         if (foundTodo is null)
         {
-            return null;
+            return (null, null);
+        }
+
+        if (request.CategoryIds is not null)
+        {
+            var categoryIds = request.CategoryIds.Distinct().ToArray();
+            var categories = await _categoryRepository.GetTrackedByIdsAsync(categoryIds);
+
+            if (categories.Length != categoryIds.Length)
+            {
+                return (null, "One or more categories do not exist.");
+            }
+
+            foundTodo.Categories.Clear();
+            foreach (var category in categories)
+            {
+                foundTodo.Categories.Add(category);
+            }
         }
 
         request.ApplyTo(foundTodo);
@@ -64,7 +81,7 @@ public class TodoService : ITodoService
 
         await _todoRepository.SaveChangesAsync();
 
-        return foundTodo;
+        return (foundTodo, null);
     }
 
     public async Task<bool> RemoveAsync(int id)
