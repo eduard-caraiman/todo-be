@@ -12,15 +12,21 @@ public class CategoryService : ICategoryService
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<Category> CreateAsync(CreateCategoryRequest request)
-    {
-        var newCategory = request.To();
 
-        return await _categoryRepository.CreateAsync(newCategory);
+    public async Task<Category[]> GetAllAsync()
+    {
+        return await _categoryRepository.GetAllAsync();
     }
 
     public async Task<Category?> GetByIdAsync(int id)
     {
         return await _categoryRepository.GetByIdAsync(id);
+    }
+
+    public async Task<Category> CreateAsync(CreateCategoryRequest request)
+    {
+        var newCategory = request.To();
+
+        return await _categoryRepository.CreateAsync(newCategory);
     }
 }

@@ -16,6 +16,21 @@ public class CategoriesController : BaseController
 
 
     /// <summary>
+    /// Gets All Categories
+    /// </summary>
+    /// <returns>Return the All Categories in JSON </returns>
+    [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<GetCategoryResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAllCategories()
+    {
+        var categoriesList = await _categoryService.GetAllAsync();
+
+        return Ok(categoriesList.Select(todo => GetCategoryResponse.From(todo)));
+    }
+
+
+    /// <summary>
     /// Gets Category by ID
     /// </summary>
     /// <returns>Return the Category in JSON </returns>
