@@ -1,4 +1,6 @@
-﻿namespace todo_be.Todos.Service;
+﻿using todo_be.Todos.Requests;
+
+namespace todo_be.Todos.Service;
 
 public interface ITodoService
 {
