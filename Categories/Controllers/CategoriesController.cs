@@ -26,7 +26,7 @@ public class CategoriesController : BaseController
     {
         var categoriesList = await _categoryService.GetAllAsync();
 
-        return Ok(categoriesList.Select(todo => GetCategoryResponse.From(todo)));
+        return Ok(categoriesList.Select(category => GetCategoryResponse.From(category)));
     }
 
 
@@ -73,5 +73,24 @@ public class CategoriesController : BaseController
         var newCategory = await _categoryService.CreateAsync(request);
 
         return Created($"/api/categories/{newCategory.Id}", GetCategoryResponse.From(newCategory));
+    }
+
+    /// <summary>
+    /// Delete Category
+    /// </summary>
+    /// <returns>Return no content</returns>
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteCategory([FromRoute] int id)
+    {
+        var wasDeleted = await _categoryService.RemoveAsync(id);
+        if (wasDeleted == false)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
     }
 }

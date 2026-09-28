@@ -29,4 +29,18 @@ public class CategoryService : ICategoryService
 
         return await _categoryRepository.CreateAsync(newCategory);
     }
+
+    public async Task<bool> RemoveAsync(int id)
+    {
+        var foundCategory = await _categoryRepository.GetByIdAsync(id);
+        if (foundCategory == null)
+        {
+            return false;
+        }
+
+        _categoryRepository.Remove(foundCategory);
+        await _categoryRepository.SaveChangesAsync();
+
+        return true;
+    }
 }
