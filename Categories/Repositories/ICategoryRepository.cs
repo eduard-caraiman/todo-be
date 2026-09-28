@@ -4,6 +4,7 @@ public interface ICategoryRepository
 {
     Task<Category[]> GetAllAsync();
     Task<Category?> GetByIdAsync(int id);
+    Task<Category?> GetTrackedByIdAsync(int id);
     Task<Category> CreateAsync(Category category);
     void Remove(Category category);
     Task SaveChangesAsync();

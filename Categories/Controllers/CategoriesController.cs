@@ -76,6 +76,42 @@ public class CategoriesController : BaseController
     }
 
     /// <summary>
+    /// Update Category
+    /// </summary>
+    /// <returns>Return the updated Category in JSON </returns>
+    [HttpPut("{id}")]
+    [ProducesResponseType(typeof(GetCategoryResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateCategory([FromRoute] int id, [FromBody] UpdateCategoryRequest request)
+    {
+        try
+        {
+            var validationResults = await ValidateAsync(request);
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToModelStateDictionary());
+            }
+
+
+            var foundTodo = await _categoryService.UpdateAsync(id, request);
+
+            if (foundTodo is null)
+            {
+                return NotFound();
+            }
+
+
+            return Ok(GetCategoryResponse.From(foundTodo));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while updating the todo");
+        }
+    }
+
+    /// <summary>
     /// Delete Category
     /// </summary>
     /// <returns>Return no content</returns>
