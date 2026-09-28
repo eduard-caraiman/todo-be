@@ -1,3 +1,5 @@
+using todo_be.Categories;
+
 namespace todo_be.Todos;
 
 public class Todo
@@ -11,5 +13,5 @@ public class Todo
     public DateTime UpdatedAt { get; set; }
 
     public ICollection<TodoComment> Comments { get; set; } = [];
+    public ICollection<Category> Categories { get; set; } = [];
 }
-

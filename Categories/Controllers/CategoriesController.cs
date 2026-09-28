@@ -1,0 +1,62 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using todo_be.Categories.Requests;
+using todo_be.Categories.Responses;
+using todo_be.Categories.Services;
+
+namespace todo_be.Categories.Controllers;
+
+public class CategoriesController : BaseController
+{
+    private readonly ICategoryService _categoryService;
+
+    public CategoriesController(ICategoryService categoryService)
+    {
+        _categoryService = categoryService;
+    }
+
+
+    /// <summary>
+    /// Gets Category by ID
+    /// </summary>
+    /// <returns>Return the Category in JSON </returns>
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(GetCategoryResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetCategoryById([FromRoute] int id)
+    {
+        var foundCategory = await _categoryService.GetByIdAsync(id);
+
+        if (foundCategory == null)
+        {
+            return NotFound();
+        }
+
+        var categoryResponse = GetCategoryResponse.From(foundCategory);
+
+        return Ok(categoryResponse);
+    }
+
+
+    /// <summary>
+    /// Create Todo Category
+    /// </summary>
+    /// <returns>Return the new created Todo Category in JSON </returns>
+    [HttpPost]
+    [ProducesResponseType(typeof(GetCategoryResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequest request)
+    {
+        var validationResults = await ValidateAsync(request);
+        if (!validationResults.IsValid)
+        {
+            return BadRequest(validationResults.ToModelStateDictionary());
+        }
+
+
+        var newCategory = await _categoryService.CreateAsync(request);
+
+        return Created($"/api/categories/{newCategory.Id}", GetCategoryResponse.From(newCategory));
+    }
+}
