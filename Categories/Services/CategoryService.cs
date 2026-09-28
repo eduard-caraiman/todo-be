@@ -30,9 +30,9 @@ public class CategoryService : ICategoryService
         return await _categoryRepository.CreateAsync(newCategory);
     }
 
-    public async Task<Category?> UpdateAsync(int todoId, UpdateCategoryRequest request)
+    public async Task<Category?> UpdateAsync(int categoryId, UpdateCategoryRequest request)
     {
-        var foundCategory = await _categoryRepository.GetTrackedByIdAsync(todoId);
+        var foundCategory = await _categoryRepository.GetTrackedByIdAsync(categoryId);
         if (foundCategory is null)
         {
             return null;

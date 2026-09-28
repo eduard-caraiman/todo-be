@@ -8,10 +8,15 @@ namespace todo_be.Categories.Controllers;
 public class CategoriesController : BaseController
 {
     private readonly ICategoryService _categoryService;
+    private readonly ILogger<CategoriesController> _logger;
 
-    public CategoriesController(ICategoryService categoryService)
+    public CategoriesController(
+        ICategoryService categoryService, 
+        ILogger<CategoriesController> logger
+        )
     {
         _categoryService = categoryService;
+        _logger = logger;
     }
 
 
@@ -95,19 +100,20 @@ public class CategoriesController : BaseController
             }
 
 
-            var foundTodo = await _categoryService.UpdateAsync(id, request);
+            var foundCategory = await _categoryService.UpdateAsync(id, request);
 
-            if (foundTodo is null)
+            if (foundCategory is null)
             {
                 return NotFound();
             }
 
 
-            return Ok(GetCategoryResponse.From(foundTodo));
+            return Ok(GetCategoryResponse.From(foundCategory));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "An error occurred while updating the todo");
+            _logger.LogError(ex, "Error occurred while updating category with ID: {CategoryId}", id);
+            return StatusCode(500, "An error occurred while updating the category");
         }
     }
 
