@@ -69,11 +69,7 @@ public class TodoService : ITodoService
                 return (null, "One or more categories do not exist.");
             }
 
-            foundTodo.Categories.Clear();
-            foreach (var category in categories)
-            {
-                foundTodo.Categories.Add(category);
-            }
+            foundTodo.Categories = categories.ToList();
         }
 
         request.ApplyTo(foundTodo);
