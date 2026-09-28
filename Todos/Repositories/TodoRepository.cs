@@ -21,12 +21,18 @@ public class TodoRepository : ITodoRepository
 
     public async Task<Todo[]> GetAllAsync()
     {
-        return await _dbContext.Todos.Include(t => t.Comments).ToArrayAsync();
+        return await _dbContext.Todos
+            .Include(t => t.Comments)
+            .Include(t => t.Categories)
+            .ToArrayAsync();
     }
 
     public async Task<Todo?> GetByIdAsync(int id)
     {
-        return await _dbContext.Todos.Include(t => t.Comments).SingleOrDefaultAsync(t => t.Id == id);
+        return await _dbContext.Todos
+            .Include(t => t.Comments)
+            .Include(t => t.Categories)
+            .SingleOrDefaultAsync(t => t.Id == id);
     }
 
     public async Task<Todo> CreateAsync(Todo todo)
@@ -42,6 +48,7 @@ public class TodoRepository : ITodoRepository
         return await _dbContext.Todos
             .AsTracking()
             .Include(t => t.Comments)
+            .Include(t => t.Categories)
             .SingleOrDefaultAsync(t => t.Id == id);
     }
 

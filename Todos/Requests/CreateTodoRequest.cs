@@ -7,6 +7,7 @@ public class CreateTodoRequest
     public required string Title { get; set; }
     public required string Description { get; set; }
     public required bool IsCompleted { get; set; }
+    public int[] CategoryIds { get; set; } = [];
 
 
     public Todo To()
@@ -26,5 +27,6 @@ public class CreateTodoRequestValidator : AbstractValidator<CreateTodoRequest>
     {
         RuleFor(x => x.Title).NotEmpty().WithMessage("Title is required");
         RuleFor(x => x.Description).NotEmpty().WithMessage("Description is required");
+        RuleFor(x => x.CategoryIds).NotNull().WithMessage("Category List cant be null");
     }
 }

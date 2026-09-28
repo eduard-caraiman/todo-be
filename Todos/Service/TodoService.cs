@@ -1,16 +1,20 @@
-﻿using todo_be.Todos.Repositories;
+﻿using todo_be.Categories.Repositories;
+using todo_be.Todos.Repositories;
 
 namespace todo_be.Todos.Service;
 
 public class TodoService : ITodoService
 {
     private readonly ITodoRepository _todoRepository;
+    private readonly ICategoryRepository _categoryRepository;
 
     public TodoService(
-        ITodoRepository todoRepository
+        ITodoRepository todoRepository,
+        ICategoryRepository categoryRepository
     )
     {
         _todoRepository = todoRepository;
+        _categoryRepository = categoryRepository;
     }
 
     public async Task<Todo[]> GetAllAsync()
@@ -24,13 +28,23 @@ public class TodoService : ITodoService
     }
 
 
-    public async Task<Todo> CreateAsync(CreateTodoRequest request)
+    public async Task<Todo?> CreateAsync(CreateTodoRequest request)
     {
+        var categoryIds = request.CategoryIds.Distinct().ToArray();
+
+        var categories = await _categoryRepository.GetTrackedByIdsAsync(categoryIds);
+
+        if (categories.Length != categoryIds.Length)
+        {
+            return null;
+        }
+
         var currentDate = DateTime.Now;
         var newTodo = request.To();
 
         newTodo.CreatedAt = currentDate;
         newTodo.UpdatedAt = currentDate;
+        newTodo.Categories = categories;
 
         return await _todoRepository.CreateAsync(newTodo);
     }

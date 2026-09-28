@@ -31,6 +31,14 @@ public class CategoryRepository : ICategoryRepository
     {
         return await _dbContext.Categories.AsTracking().SingleOrDefaultAsync(c => c.Id == categoryId);
     }
+    
+    public async Task<Category[]> GetTrackedByIdsAsync(int[] categoryIds)
+    {
+        return await _dbContext.Categories
+            .AsTracking()
+            .Where(category => categoryIds.Contains(category.Id))
+            .ToArrayAsync();
+    }
 
     public async Task<Category> CreateAsync(Category category)
     {

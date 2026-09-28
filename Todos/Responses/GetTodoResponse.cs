@@ -1,4 +1,6 @@
-namespace todo_be.Todos;
+using todo_be.Categories.Responses;
+
+namespace todo_be.Todos.Responses;
 
 public class GetTodoResponse
 {
@@ -6,7 +8,8 @@ public class GetTodoResponse
     public string Title { get; set; }
     public string Description { get; set; }
     public bool IsCompleted { get; set; }
-    public ICollection<GetTodoCommentResponse> Comments { get; set; }
+    public ICollection<GetTodoCommentResponse> Comments { get; set; } = [];
+    public ICollection<GetCategoryResponse> Categories { get; set; } = [];
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
@@ -19,6 +22,7 @@ public class GetTodoResponse
             Description = todo.Description,
             IsCompleted = todo.IsCompleted,
             Comments = todo.Comments.Select(comment => GetTodoCommentResponse.From(comment)).ToArray(),
+            Categories = todo.Categories.Select(category => GetCategoryResponse.From(category)).ToArray(),
             CreatedAt = todo.CreatedAt,
             UpdatedAt = todo.UpdatedAt
         };

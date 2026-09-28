@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using todo_be.Todos.Responses;
 using todo_be.Todos.Service;
 
 namespace todo_be.Todos.Controllers;
@@ -74,6 +75,11 @@ public class TodosController : BaseController
 
 
         var newTodo = await _todoService.CreateAsync(request);
+
+        if (newTodo == null)
+        {
+            return BadRequest("One or more categories doesn't exist");
+        }
 
         return Created($"/todos/{newTodo.Id}", GetTodoResponse.From(newTodo));
     }
