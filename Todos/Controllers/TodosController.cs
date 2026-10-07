@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using todo_be.Documents.Messages;
 using todo_be.Documents.Messaging;
 using todo_be.Todos.Requests;
@@ -12,16 +12,22 @@ public class TodosController : BaseController
     private readonly ILogger<TodosController> _logger;
     private readonly ITodoService _todoService;
     private readonly IDocumentUploadPublisher _documentUploadPublisher;
+    private readonly IDocumentDeletePublisher _documentDeletePublisher;
+    private readonly ITodoDocumentService _todoDocumentService;
 
     public TodosController(
         ILogger<TodosController> logger,
         ITodoService todoService,
-        IDocumentUploadPublisher documentUploadPublisher
+        IDocumentUploadPublisher documentUploadPublisher,
+        IDocumentDeletePublisher documentDeletePublisher,
+        ITodoDocumentService todoDocumentService
     )
     {
         _logger = logger;
         _todoService = todoService;
         _documentUploadPublisher = documentUploadPublisher;
+        _documentDeletePublisher = documentDeletePublisher;
+        _todoDocumentService = todoDocumentService;
     }
 
 
@@ -225,7 +231,7 @@ public class TodosController : BaseController
 
         if (file.Length == 0)
         {
-            return BadRequest("Fișierul nu poate fi gol.");
+            return BadRequest("FiÈ™ierul nu poate fi gol.");
         }
 
         await using var content = file.OpenReadStream();
@@ -252,4 +258,44 @@ public class TodosController : BaseController
             message.TodoId
         });
     }
+    /// <summary>
+    /// Request deletion of a document from a Todo
+    /// </summary>
+    /// <returns>Return status 202</returns>
+    [HttpDelete("{todoId}/documents/{documentId:guid}")]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RequestDocumentDelete(
+        [FromRoute] int todoId,
+        [FromRoute] Guid documentId)
+    {
+        var todoDocument = await _todoDocumentService.GetByTodoIdAndDocumentIdAsync(
+            todoId,
+            documentId,
+            HttpContext.RequestAborted);
+
+        if (todoDocument is null)
+        {
+            return NotFound();
+        }
+
+        var message = new DocumentDeleteRequested
+        {
+            TodoId = todoId,
+            DocumentId = documentId
+        };
+
+        await _documentDeletePublisher.PublishAsync(
+            message,
+            HttpContext.RequestAborted);
+
+        return Accepted(new
+        {
+            message.MessageId,
+            message.TodoId,
+            message.DocumentId
+        });
+    }
 }
+
+

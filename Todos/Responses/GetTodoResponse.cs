@@ -10,6 +10,7 @@ public class GetTodoResponse
     public bool IsCompleted { get; set; }
     public ICollection<GetTodoCommentResponse> Comments { get; set; } = [];
     public ICollection<GetCategoryResponse> Categories { get; set; } = [];
+    public ICollection<GetTodoDocumentResponse> Documents { get; set; } = [];
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
@@ -23,6 +24,7 @@ public class GetTodoResponse
             IsCompleted = todo.IsCompleted,
             Comments = todo.Comments.Select(comment => GetTodoCommentResponse.From(comment)).ToArray(),
             Categories = todo.Categories.Select(category => GetCategoryResponse.From(category)).ToArray(),
+            Documents = todo.Documents.Select(document => GetTodoDocumentResponse.From(document)).ToArray(),
             CreatedAt = todo.CreatedAt,
             UpdatedAt = todo.UpdatedAt
         };

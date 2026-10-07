@@ -24,6 +24,7 @@ public class TodoRepository : ITodoRepository
         return await _dbContext.Todos
             .Include(t => t.Comments)
             .Include(t => t.Categories)
+            .Include(t => t.Documents)
             .ToArrayAsync();
     }
 
@@ -32,6 +33,7 @@ public class TodoRepository : ITodoRepository
         return await _dbContext.Todos
             .Include(t => t.Comments)
             .Include(t => t.Categories)
+            .Include(t => t.Documents)
             .SingleOrDefaultAsync(t => t.Id == id);
     }
 
@@ -49,6 +51,7 @@ public class TodoRepository : ITodoRepository
             .AsTracking()
             .Include(t => t.Comments)
             .Include(t => t.Categories)
+            .Include(t => t.Documents)
             .SingleOrDefaultAsync(t => t.Id == id);
     }
 

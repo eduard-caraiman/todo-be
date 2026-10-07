@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using Scalar.AspNetCore;
@@ -39,12 +39,12 @@ builder.Services.AddSingleton<IConnection>(serviceProvider =>
     var factory = new ConnectionFactory
     {
         HostName = rabbitMq["HostName"]
-                   ?? throw new InvalidOperationException("RabbitMQ HostName lipsește."),
+                   ?? throw new InvalidOperationException("RabbitMQ HostName lipseÈ™te."),
         Port = rabbitMq.GetValue<int>("Port"),
         UserName = rabbitMq["UserName"]
-                   ?? throw new InvalidOperationException("RabbitMQ UserName lipsește."),
+                   ?? throw new InvalidOperationException("RabbitMQ UserName lipseÈ™te."),
         Password = rabbitMq["Password"]
-                   ?? throw new InvalidOperationException("RabbitMQ Password lipsește."),
+                   ?? throw new InvalidOperationException("RabbitMQ Password lipseÈ™te."),
         AutomaticRecoveryEnabled = true
     };
 
@@ -52,7 +52,9 @@ builder.Services.AddSingleton<IConnection>(serviceProvider =>
 });
 
 builder.Services.AddScoped<IDocumentUploadPublisher, RabbitMqDocumentUploadPublisher>();
+builder.Services.AddScoped<IDocumentDeletePublisher, RabbitMqDocumentDeletePublisher>();
 builder.Services.AddHostedService<DocumentCreatedConsumer>();
+builder.Services.AddHostedService<DocumentDeletedConsumer>();
 
 builder.Services.AddScoped<ITodoRepository, TodoRepository>();
 builder.Services.AddScoped<ITodoService, TodoService>();
@@ -87,3 +89,4 @@ app.UseCors("Frontend");
 
 app.MapControllers();
 app.Run();
+

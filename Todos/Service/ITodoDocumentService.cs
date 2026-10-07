@@ -8,4 +8,14 @@ public interface ITodoDocumentService
         string fileName,
         long size,
         CancellationToken cancellationToken = default);
+
+    Task<TodoDocument?> GetByTodoIdAndDocumentIdAsync(
+        int todoId,
+        Guid documentId,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> RemoveLinkAsync(
+        int todoId,
+        Guid documentId,
+        CancellationToken cancellationToken = default);
 }

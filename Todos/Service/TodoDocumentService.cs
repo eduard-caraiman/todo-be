@@ -6,12 +6,10 @@ public class TodoDocumentService : ITodoDocumentService
 {
     private readonly ITodoDocumentRepository _todoDocumentRepository;
 
-    public TodoDocumentService(
-        ITodoDocumentRepository todoDocumentRepository)
+    public TodoDocumentService(ITodoDocumentRepository todoDocumentRepository)
     {
         _todoDocumentRepository = todoDocumentRepository;
     }
-
 
     public async Task LinkDocumentAsync(
         int todoId,
@@ -29,8 +27,28 @@ public class TodoDocumentService : ITodoDocumentService
             CreatedAt = DateTime.UtcNow
         };
 
-        await _todoDocumentRepository.CreateAsync(
-            todoDocument,
+        await _todoDocumentRepository.CreateAsync(todoDocument, cancellationToken);
+    }
+
+    public async Task<TodoDocument?> GetByTodoIdAndDocumentIdAsync(
+        int todoId,
+        Guid documentId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _todoDocumentRepository.GetByTodoIdAndDocumentIdAsync(
+            todoId,
+            documentId,
+            cancellationToken);
+    }
+
+    public async Task<bool> RemoveLinkAsync(
+        int todoId,
+        Guid documentId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _todoDocumentRepository.RemoveByTodoIdAndDocumentIdAsync(
+            todoId,
+            documentId,
             cancellationToken);
     }
 }
