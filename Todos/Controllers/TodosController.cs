@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using todo_be.Documents.Messages;
+using todo_be.Documents.Messaging;
 using todo_be.Todos.Requests;
 using todo_be.Todos.Responses;
 using todo_be.Todos.Service;
@@ -9,14 +11,17 @@ public class TodosController : BaseController
 {
     private readonly ILogger<TodosController> _logger;
     private readonly ITodoService _todoService;
+    private readonly IDocumentUploadPublisher _documentUploadPublisher;
 
     public TodosController(
         ILogger<TodosController> logger,
-        ITodoService todoService
+        ITodoService todoService,
+        IDocumentUploadPublisher documentUploadPublisher
     )
     {
         _logger = logger;
         _todoService = todoService;
+        _documentUploadPublisher = documentUploadPublisher;
     }
 
 
@@ -195,5 +200,56 @@ public class TodosController : BaseController
 
 
         return NoContent();
+    }
+
+
+    /// <summary>
+    /// Add a Document to a Todo
+    /// </summary>
+    /// <returns>Return status 202</returns>
+    [HttpPost("{todoId}/documents")]
+    [Consumes("multipart/form-data")]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RequestDocumentUpload(
+        [FromRoute] int todoId,
+        [FromForm] IFormFile file)
+    {
+        var todo = await _todoService.GetByIdAsync(todoId);
+
+        if (todo is null)
+        {
+            return NotFound();
+        }
+
+        if (file.Length == 0)
+        {
+            return BadRequest("Fișierul nu poate fi gol.");
+        }
+
+        await using var content = file.OpenReadStream();
+        using var memory = new MemoryStream();
+
+        await content.CopyToAsync(memory, HttpContext.RequestAborted);
+
+        var message = new DocumentUploadRequested
+        {
+            TodoId = todoId,
+            FileName = file.FileName,
+            ContentType = file.ContentType,
+            Size = file.Length,
+            Content = memory.ToArray()
+        };
+
+        await _documentUploadPublisher.PublishAsync(
+            message,
+            HttpContext.RequestAborted);
+
+        return Accepted(new
+        {
+            message.MessageId,
+            message.TodoId
+        });
     }
 }

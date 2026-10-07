@@ -14,4 +14,5 @@ public class Todo
 
     public ICollection<TodoComment> Comments { get; set; } = [];
     public ICollection<Category> Categories { get; set; } = [];
+    public ICollection<TodoDocument> Documents { get; set; } = [];
 }

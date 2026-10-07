@@ -1,9 +1,11 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
 using Scalar.AspNetCore;
 using todo_be.Categories.Repositories;
 using todo_be.Categories.Services;
 using todo_be.Database;
+using todo_be.Documents.Messaging;
 using todo_be.Todos.Repositories;
 using todo_be.Todos.Service;
 
@@ -29,10 +31,35 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
+builder.Services.AddSingleton<IConnection>(serviceProvider =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var rabbitMq = configuration.GetRequiredSection("RabbitMq");
+
+    var factory = new ConnectionFactory
+    {
+        HostName = rabbitMq["HostName"]
+                   ?? throw new InvalidOperationException("RabbitMQ HostName lipsește."),
+        Port = rabbitMq.GetValue<int>("Port"),
+        UserName = rabbitMq["UserName"]
+                   ?? throw new InvalidOperationException("RabbitMQ UserName lipsește."),
+        Password = rabbitMq["Password"]
+                   ?? throw new InvalidOperationException("RabbitMQ Password lipsește."),
+        AutomaticRecoveryEnabled = true
+    };
+
+    return factory.CreateConnectionAsync().GetAwaiter().GetResult();
+});
+
+builder.Services.AddScoped<IDocumentUploadPublisher, RabbitMqDocumentUploadPublisher>();
+builder.Services.AddHostedService<DocumentCreatedConsumer>();
+
 builder.Services.AddScoped<ITodoRepository, TodoRepository>();
 builder.Services.AddScoped<ITodoService, TodoService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ITodoDocumentRepository, TodoDocumentRepository>();
+builder.Services.AddScoped<ITodoDocumentService, TodoDocumentService>();
 
 
 var app = builder.Build();
@@ -40,6 +67,10 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+
+    var dbContext = services.GetRequiredService<AppDbContext>();
+    await dbContext.Database.MigrateAsync();
+
     SeedData.Seed(services);
 }
 

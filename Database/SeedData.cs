@@ -22,14 +22,12 @@ public static class SeedData
                     [
                         new TodoComment
                         {
-                            Id = 1,
                             TodoId = 1,
                             Content = "First comment of the day",
                             CreatedAt = new DateTime(2026, 8, 26),
                         },
                         new TodoComment
                         {
-                            Id = 2,
                             TodoId = 1,
                             Content = "Yeeeey",
                             CreatedAt = new DateTime(2026, 8, 26),
@@ -56,7 +54,6 @@ public static class SeedData
                     [
                         new TodoComment
                         {
-                            Id = 1,
                             TodoId = 3,
                             Content = "Aici am un alt comentariu",
                             CreatedAt = new DateTime(2026, 8, 26),

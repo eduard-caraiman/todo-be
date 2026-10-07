@@ -1,0 +1,9 @@
+bin/
+obj/
+.idea/
+.git/
+.vs/
+
+employees.db
+employees.db-shm
+employees.db-wal

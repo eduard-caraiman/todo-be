@@ -13,4 +13,5 @@ public class AppDbContext : DbContext
     public DbSet<Todo> Todos { get; set; }
     public DbSet<TodoComment> TodoComments { get; set; }
     public DbSet<Category> Categories { get; set; }
+    public DbSet<TodoDocument> TodoDocuments { get; set; }
 }
