@@ -28,7 +28,11 @@ public class RabbitMqDocumentUploadPublisher : IDocumentUploadPublisher
             durable: true,
             exclusive: false,
             autoDelete: false,
-            arguments: null);
+            arguments: new Dictionary<string, object?>
+            {
+                ["x-dead-letter-exchange"] = "",
+                ["x-dead-letter-routing-key"] = DocumentMessageNames.UploadRetryQueue
+            });
 
         var body = JsonSerializer.SerializeToUtf8Bytes(message);
 
